@@ -9,8 +9,6 @@ import java.util.Map;
 public class Hanger {
     private final boolean  isDouble;
 
-
-
     private Map<PieceOfClothingType, PieceOfCLothing> clothes = new HashMap();
 
     public Hanger(boolean isDouble) {

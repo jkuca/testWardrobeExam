@@ -4,6 +4,7 @@ import hanger.Hanger;
 import pieceOfClothing.PieceOfCLothing;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Wardrobe {
 
@@ -21,50 +22,53 @@ public class Wardrobe {
         else throw new IllegalStateException("wardrobe.Wardrobe is full.");
     }
 
-    public boolean addPieceOfClothes(PieceOfCLothing pieceOfCLothing){
-        if (checkIfFreeSpace(pieceOfCLothing)){
-            for (Hanger hanger: hangers) {
+    public AtomicBoolean addPieceOfClothes(PieceOfCLothing pieceOfCLothing){
+        AtomicBoolean result = new AtomicBoolean(false);
+        if (checkIfFreeSpace(pieceOfCLothing).get()){
+            hangers.stream().forEach(hanger ->{
                 for (var piece: hanger.getClothes().entrySet()) {
                     if (pieceOfCLothing.getPieceOfClothingType().equals(piece.getKey()) && piece.getValue() == null){
                         piece.setValue(pieceOfCLothing);
-                        return true;
+                        result.set(true);
                     }
                 }
-            }}
-        return false;
+            });
+        }
+        return result;
     }
 
     public void removePieceOfClothes(int id){
-        for (Hanger hanger: hangers) {
+        hangers.stream().forEach(hanger ->{
             for (var piece: hanger.getClothes().entrySet()) {
                 if (piece.getValue() != null){
                     if (piece.getValue().getId() == id){
                         piece.setValue(null);
                     }}
-            }
+            }});
         }
-    }
 
-    public boolean checkIfFreeSpace(PieceOfCLothing pieceOfCLothing){
-        for (Hanger hanger: hangers){
+
+    public AtomicBoolean checkIfFreeSpace(PieceOfCLothing pieceOfCLothing){
+        AtomicBoolean result = new AtomicBoolean(false);
+       hangers.stream().forEach(hanger -> {
             for (var piece: hanger.getClothes().entrySet()){
                 if (piece.getKey().equals(pieceOfCLothing.getPieceOfClothingType()) && piece.getValue() == null){
                     System.out.println("there is free space for " + pieceOfCLothing.getBrandName());
-                    return true;
+                    result.set(true);
                 }
             }
-        }
+    });
         System.out.println("there is not enough free space for " + pieceOfCLothing.getBrandName());
-        return false;
+        return result;
     }
     public void showAllClothes(){
-        for (Hanger hanger: hangers){
+        hangers.stream().forEach(hanger ->{
             for (var piece: hanger.getClothes().entrySet()) {
                 if (piece.getValue() != null) {
                     System.out.println(piece.getValue().getBrandName());
                 }
             }
-        }
+        });
     }
 }
 
